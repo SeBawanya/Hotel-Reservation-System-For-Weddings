@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Ballrooms</title>
+    <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.5);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+        .toast {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        input:focus {
+            --tw-ring-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white sticky top-0 z-40 border-b border-slate-200">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex justify-between items-center py-3">
+            <a href="index.html">
+                <img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-14">
+            </a>
+            <div class="flex items-center space-x-6">
+                <a href="/admin-dashboard.html" class="text-sm font-semibold text-slate-600 hover:text-amber-600">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+                <a href="/logout" class="text-slate-500 hover:text-amber-600" title="Logout">
+                    <i class="fas fa-sign-out-alt text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+<main class="container mx-auto px-4 lg:px-8 py-8 md:py-12">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Manage Ballrooms</h1>
+            <p class="mt-1 text-slate-500">Add, edit, and remove hotel ballrooms available for booking.</p>
+        </div>
+        <button id="add-ballroom-btn" class="mt-4 md:mt-0 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-5 rounded-lg transition-transform duration-200 hover:scale-105 shadow-sm flex items-center">
+            <i class="fas fa-plus mr-2"></i> Add New Ballroom
+        </button>
+    </div>
+
+    <div id="ballroom-list" class="bg-white rounded-xl shadow-sm border border-slate-200">
+        <table class="w-full text-left">
+            <thead class="border-b border-slate-200">
+            <tr>
+                <th class="p-4 text-sm font-semibold text-slate-600">Ballroom Name</th>
+                <th class="p-4 text-sm font-semibold text-slate-600 text-right">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="ballroom-table-body">
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div id="ballroom-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0">
+        <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+            <h2 id="modal-title" class="text-xl font-semibold text-slate-800">Add New Ballroom</h2>
+            <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <form id="ballroom-form" class="p-6 space-y-5">
+            <input type="hidden" id="ballroom-id">
+            <div>
+                <label for="name" class="block text-sm font-medium text-slate-600 mb-1">Ballroom Name</label>
+                <input type="text" id="name" name="name" class="mt-1 block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required>
+            </div>
+            <div class="flex justify-end space-x-4 pt-4">
+                <button type="button" id="cancel-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-6 rounded-lg transition duration-200">Cancel</button>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-sm">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-300 scale-95 opacity-0 text-center p-8">
+        <div class="mx-auto bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-building text-3xl text-red-500"></i>
+        </div>
+        <h2 class="text-xl font-semibold text-slate-800 mb-2">Confirm Deletion</h2>
+        <p class="text-slate-600 mb-6">Are you sure you want to delete the ballroom "<span id="delete-ballroom-name" class="font-bold"></span>"?</p>
+        <div class="flex justify-center space-x-4">
+            <button id="cancel-delete-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-6 rounded-lg transition duration-200">Cancel</button>
+            <button id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="fixed top-5 right-5 z-[100] bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast">
+    <p id="toast-message"></p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const API_URL = '/api/ballrooms';
+        const ballroomTableBody = document.getElementById('ballroom-table-body');
+        const addBallroomBtn = document.getElementById('add-ballroom-btn');
+        const ballroomModal = document.getElementById('ballroom-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const ballroomForm = document.getElementById('ballroom-form');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const closeBtn = document.getElementById('close-modal-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        let ballroomToDeleteId = null;
+        let ballrooms = [];
+
+        const showToast = (message, isError = false) => {
+            toastMessage.textContent = message;
+            toast.className = `fixed top-5 right-5 z-[100] text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast ${isError ? 'bg-red-500' : 'bg-green-600'}`;
+            toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+            }, 3000);
+        };
+
+        const openModal = (modalElement) => {
+            modalElement.classList.remove('hidden');
+            setTimeout(() => {
+                const modalContent = modalElement.querySelector('div[class*="bg-white"]');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        const closeModal = (modalElement) => {
+            const modalContent = modalElement.querySelector('div[class*="bg-white"]');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                modalElement.classList.add('hidden');
+            }, 300);
+        };
+
+        const renderBallrooms = () => {
+            ballroomTableBody.innerHTML = '';
+            if (ballrooms.length === 0) {
+                ballroomTableBody.innerHTML = `
+                <tr>
+                    <td colspan="2" class="text-center py-12 text-slate-500">
+                        <div class="mx-auto bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-building text-3xl text-amber-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-700">No Ballrooms Found</h3>
+                        <p class="mt-1">Click 'Add New Ballroom' to get started.</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+            ballrooms.forEach(b => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-slate-200 last:border-b-0';
+                row.innerHTML = `
+                <td class="p-4 font-medium text-slate-800">${b.name}</td>
+                <td class="p-4 text-right">
+                    <button class="edit-btn text-sm font-semibold text-slate-600 hover:text-blue-600 transition" data-id="${b.id}"><i class="fas fa-pencil-alt mr-1"></i> Edit</button>
+                    <button class="delete-btn text-sm font-semibold text-slate-600 hover:text-red-600 transition ml-4" data-id="${b.id}" data-name="${b.name}"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+                </td>
+            `;
+                ballroomTableBody.appendChild(row);
+            });
+        };
+
+        const fetchBallrooms = async () => {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Failed to fetch ballrooms');
+                ballrooms = await response.json();
+                renderBallrooms();
+            } catch (error) {
+                showToast(error.message, true);
+            }
+        };
+
+        addBallroomBtn.addEventListener('click', () => {
+            ballroomForm.reset();
+            document.getElementById('ballroom-id').value = '';
+            modalTitle.textContent = 'Add New Ballroom';
+            openModal(ballroomModal);
+        });
+
+        cancelBtn.addEventListener('click', () => closeModal(ballroomModal));
+        closeBtn.addEventListener('click', () => closeModal(ballroomModal));
+        cancelDeleteBtn.addEventListener('click', () => closeModal(deleteModal));
+
+        ballroomTableBody.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.edit-btn');
+            if (editBtn) {
+                const id = editBtn.dataset.id;
+                const ballroom = ballrooms.find(b => b.id == id);
+                if (ballroom) {
+                    document.getElementById('ballroom-id').value = ballroom.id;
+                    document.getElementById('name').value = ballroom.name;
+                    modalTitle.textContent = 'Edit Ballroom';
+                    openModal(ballroomModal);
+                }
+            }
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                ballroomToDeleteId = deleteBtn.dataset.id;
+                document.getElementById('delete-ballroom-name').textContent = deleteBtn.dataset.name;
+                openModal(deleteModal);
+            }
+        });
+
+        ballroomForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const ballroomData = {
+                name: document.getElementById('name').value.trim()
+            };
+
+            if (!ballroomData.name) {
+                showToast('Ballroom name cannot be empty.', true);
+                return;
+            }
+
+            const id = document.getElementById('ballroom-id').value;
+            const isEditing = !!id;
+            const url = isEditing ? `${API_URL}/${id}` : API_URL;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ballroomData)
+                });
+                if (!response.ok) throw new Error(`Failed to ${isEditing ? 'update' : 'add'} ballroom`);
+
+                showToast(`Ballroom ${isEditing ? 'Updated' : 'Added'} Successfully!`);
+                closeModal(ballroomModal);
+                fetchBallrooms();
+            } catch (error) {
+                showToast(error.message, true);
+            }
+        });
+
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (!ballroomToDeleteId) return;
+            try {
+                const response = await fetch(`${API_URL}/${ballroomToDeleteId}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Failed to delete ballroom');
+                showToast('Ballroom Deleted Successfully!');
+                closeModal(deleteModal);
+                fetchBallrooms();
+            } catch (error) {
+                showToast(error.message, true);
+            } finally {
+                ballroomToDeleteId = null;
+            }
+        });
+
+        fetchBallrooms();
+    });
+</script>
+
+</body>
+</html>

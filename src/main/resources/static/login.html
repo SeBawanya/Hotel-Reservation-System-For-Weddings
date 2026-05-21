@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Golden Palm</title>
+    <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen">
+<div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+    <div class="text-center mb-8">
+        <a href="index.html">
+            <img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-16 mx-auto">
+        </a>
+        <h1 class="text-2xl font-bold text-slate-800 mt-4">Welcome Back</h1>
+        <p class="text-slate-500">Sign in to continue to your account.</p>
+    </div>
+
+    <!-- Login Form -->
+    <form action="/login" method="POST" class="space-y-6">
+        <div>
+            <label for="username" class="block text-sm font-medium text-slate-600 mb-1">Email Address</label>
+            <!-- FIX: Added name="username" -->
+            <input type="email" id="username" name="username" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required>
+        </div>
+        <div>
+            <label for="password" class="block text-sm font-medium text-slate-600 mb-1">Password</label>
+            <!-- FIX: Added name="password" -->
+            <input type="password" id="password" name="password" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required>
+        </div>
+        <div id="error-message" class="hidden text-red-500 text-sm text-center">
+            Invalid email or password. Please try again.
+        </div>
+        <div>
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-transform duration-200 hover:scale-105 shadow-sm">Sign In</button>
+        </div>
+    </form>
+
+    <div class="text-center mt-6 text-sm">
+        <p class="text-slate-500">
+            Don't have an account? <a href="register.html" class="font-semibold text-amber-600 hover:underline">Register Now</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Show error message if the URL contains "?error=true"
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error')) {
+            document.getElementById('error-message').classList.remove('hidden');
+        }
+    });
+</script>
+</body>
+</html>

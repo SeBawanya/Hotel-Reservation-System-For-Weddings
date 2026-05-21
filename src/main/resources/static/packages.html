@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Packages - Golden Palm</title>
+  <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .package-card {
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .package-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+<!-- Header (Consistent with index.html) -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4 lg:px-8">
+    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+      <a href="index.html"><img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-16"></a>
+      <div class="hidden md:flex items-center space-x-6 text-sm text-gray-600">
+        <div id="auth-links-desktop">
+          <a href="login.html" class="hover:text-amber-600"><i class="fas fa-user mr-1"></i> Sign In</a>
+          <a href="register.html" class="hover:text-amber-600 ml-4">Join Now</a>
+        </div>
+        <div id="user-info-desktop" class="hidden items-center">
+          <span id="welcome-message-desktop" class="font-semibold"></span>
+          <a href="profile.html" class="ml-4 hover:text-amber-600 font-semibold">My Profile</a>
+          <a href="reservations.html" class="ml-4 hover:text-amber-600">My Reservations</a>
+          <a href="/logout" id="logout-link-desktop" class="hover:text-amber-600 ml-4 cursor-pointer">Logout</a>
+        </div>
+      </div>
+      <button id="mobile-menu-button" class="md:hidden text-gray-700"><i class="fas fa-bars text-2xl"></i></button>
+    </div>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 lg:px-8 py-12 md:py-16">
+  <div class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-slate-800">Our Wedding Packages</h1>
+    <p class="mt-3 text-lg text-slate-500 max-w-3xl mx-auto">Discover the perfect collection of services to make your special day unforgettable. Each package is crafted with elegance and attention to detail.</p>
+  </div>
+
+  <!-- Package List Container -->
+  <div id="package-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Loading State -->
+    <div id="loading-state" class="col-span-full text-center py-16">
+      <i class="fas fa-spinner fa-spin text-4xl text-amber-500"></i>
+      <p class="mt-4 text-slate-600">Loading exquisite packages...</p>
+    </div>
+    <!-- Packages will be dynamically inserted here -->
+  </div>
+</main>
+
+<!-- Footer (Consistent with index.html) -->
+<footer class="text-sm bg-gray-100 mt-16">
+  <div class="py-12">
+    <div class="container mx-auto px-4 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-700">
+      <div><h4 class="font-semibold mb-3">Golden-Palm Colombo</h4><p>Address: Sittarakala Estate, Shangri-La Mawatha, Chithragala, Ambalantota Sri Lanka</p><p>Phone: (94 11) 788 8288</p><p>E-mail: slcb@golden-palm.com</p></div>
+      <div><h4 class="font-semibold mb-3">Check-in / Check-out</h4><p class="mb-2">We hope you've enjoyed your stay from start to finish. Please note the check-in / out times below:</p><p>Check-in: 2pm</p><p>Check-out: 12 noon</p></div>
+      <div><h4 class="font-semibold mb-3">Payment Methods</h4><p class="mb-3">Online payment methods we accept as selected platforms:</p><div class="flex items-center space-x-3 text-2xl text-gray-500"><i class="fab fa-cc-amex"></i><i class="fab fa-cc-diners-club"></i><i class="fab fa-cc-jcb"></i><i class="fab fa-cc-mastercard"></i><i class="fab fa-cc-visa"></i><i class="fab fa-cc-apple-pay"></i></div></div>
+    </div>
+  </div>
+  <div class="bg-gray-800 text-gray-300 py-12">
+    <div class="container mx-auto px-4 lg:px-8"><div class="border-t border-gray-700 pt-6 flex justify-center space-x-6"><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f text-xl"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-weibo text-xl"></i></a></div></div>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const packageList = document.getElementById('package-list');
+    const loadingState = document.getElementById('loading-state');
+
+    // --- Auth display logic (copied from index.html) ---
+    const authLinksDesktop = document.getElementById('auth-links-desktop');
+    const userInfoDesktop = document.getElementById('user-info-desktop');
+    const welcomeMessageDesktop = document.getElementById('welcome-message-desktop');
+    async function checkAuthStatus() {
+      try {
+        const response = await fetch('/api/auth/status');
+        const data = await response.json();
+        if (data.isAuthenticated) {
+          authLinksDesktop.classList.add('hidden');
+          userInfoDesktop.classList.remove('hidden');
+          userInfoDesktop.classList.add('flex');
+          welcomeMessageDesktop.textContent = `Welcome, ${data.name}`;
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+      }
+    }
+    checkAuthStatus();
+
+    // --- Fetch and Render Packages ---
+    async function fetchAndRenderPackages() {
+      try {
+        const response = await fetch('/api/packages');
+        if (!response.ok) throw new Error('Could not fetch packages.');
+
+        const packages = await response.json();
+
+        loadingState.classList.add('hidden');
+        packageList.innerHTML = ''; // Clear loading state
+
+        if (packages.length === 0) {
+          packageList.innerHTML = `<div class="col-span-full text-center py-16 bg-white rounded-lg shadow-md"><p class="text-slate-500">No wedding packages are available at this time. Please check back later.</p></div>`;
+          return;
+        }
+
+        packages.forEach(pkg => {
+          // Create list of included services
+          const servicesHtml = (pkg.services || '').split('\n').filter(s => s.trim() !== '').map(service => `
+                        <li class="flex items-start text-slate-600">
+                            <i class="fas fa-check-circle text-amber-500 mt-1 mr-3"></i>
+                            <span>${service}</span>
+                        </li>
+                    `).join('');
+
+          // Create list of optional add-ons
+          let addonsHtml = '';
+          if (pkg.optionalServices && pkg.optionalServices.length > 0) {
+            addonsHtml += `<div class="mt-6 pt-4 border-t border-slate-200">
+                                        <h4 class="font-semibold text-slate-700 mb-3">Optional Add-ons</h4>
+                                        <ul class="space-y-2">`;
+            pkg.optionalServices.forEach(addon => {
+              addonsHtml += `
+                                <li class="flex justify-between text-sm text-slate-500">
+                                    <span>${addon.name}</span>
+                                    <span class="font-medium">+ LKR ${addon.price.toLocaleString()}</span>
+                                </li>`;
+            });
+            addonsHtml += `</ul></div>`;
+          }
+
+          const card = document.createElement('div');
+          card.className = 'package-card bg-white rounded-xl shadow-md border border-slate-200 flex flex-col';
+          card.innerHTML = `
+                        <div class="p-8 flex-grow">
+                            <h3 class="text-2xl font-bold text-slate-800">${pkg.name}</h3>
+                            <p class="text-slate-500 mt-2">${pkg.description}</p>
+                            <p class="text-4xl font-light text-amber-600 my-5">LKR ${pkg.price.toLocaleString()}</p>
+                            <h4 class="font-semibold text-slate-700 mb-3">What's Included</h4>
+                            <ul class="space-y-2.5">
+                                ${servicesHtml}
+                            </ul>
+                            ${addonsHtml}
+                        </div>
+                        <div class="bg-slate-50 p-6 border-t border-slate-200 mt-auto">
+                            <a href="booking.html" class="block w-full text-center bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-6 rounded-lg transition-transform duration-200 hover:scale-105">
+                                Check Availability & Book
+                            </a>
+                        </div>
+                    `;
+          packageList.appendChild(card);
+        });
+
+      } catch (error) {
+        loadingState.classList.add('hidden');
+        packageList.innerHTML = `<div class="col-span-full text-center py-16 bg-white rounded-lg shadow-md"><p class="text-red-500 font-semibold">${error.message}</p></div>`;
+      }
+    }
+
+    fetchAndRenderPackages();
+  });
+</script>
+
+</body>
+</html>

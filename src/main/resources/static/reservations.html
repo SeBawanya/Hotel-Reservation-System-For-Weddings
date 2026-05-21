@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Reservations - Golden Palm</title>
+  <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .modal-backdrop { background-color: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); }
+    .toast { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
+    .modal-content { transform: scale(0.95); opacity: 0; transition: all 0.2s ease-in-out; }
+    .modal-content.show { transform: scale(1); opacity: 1; }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="container mx-auto px-4 lg:px-8">
+    <div class="flex justify-between items-center py-3">
+      <a href="index.html"><img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-14"></a>
+      <a href="index.html" class="text-sm font-semibold text-gray-600 hover:text-amber-600"><i class="fas fa-home mr-2"></i>Back to Home</a>
+    </div>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 lg:px-8 py-12">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 border-b pb-4 mb-8">My Reservations</h1>
+    <div id="reservations-container" class="space-y-6"></div>
+    <div id="loading-spinner" class="text-center py-12"><i class="fas fa-spinner fa-spin text-4xl text-amber-500"></i><p class="mt-2 text-gray-600">Loading your reservations...</p></div>
+    <div id="no-reservations" class="hidden text-center py-12 bg-white rounded-lg shadow-sm">
+      <i class="fas fa-calendar-times text-5xl text-gray-400"></i>
+      <h2 class="mt-4 text-xl font-semibold text-gray-700">No Reservations Found</h2>
+      <p class="text-gray-500 mt-2">You have not made any bookings yet.</p>
+      <a href="booking.html" class="mt-6 inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-md transition">Book a Venue</a>
+    </div>
+  </div>
+</main>
+
+<div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+  <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-lg">
+    <div class="p-4 border-b flex justify-between items-center">
+      <h2 class="text-xl font-semibold">Edit Reservation</h2>
+      <button class="close-modal-btn text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+    <form id="edit-booking-form" class="p-6 space-y-4">
+      <input type="hidden" id="edit-booking-id">
+      <div>
+        <label for="edit-booking-date" class="block text-sm font-medium text-slate-600 mb-1">Event Date</label>
+        <input type="date" id="edit-booking-date" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500">
+      </div>
+      <div>
+        <label for="edit-ballroom-select" class="block text-sm font-medium text-slate-600 mb-1">Ballroom</label>
+        <select id="edit-ballroom-select" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500">
+          <option>Loading...</option>
+        </select>
+      </div>
+      <div class="pt-2 flex justify-end space-x-3">
+        <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="cancel-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 text-center p-8">
+    <div class="mx-auto bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-exclamation-triangle text-3xl text-red-500"></i></div>
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">Confirm Cancellation</h2>
+    <p class="text-gray-600 mb-6">Are you sure you want to permanently cancel this reservation?</p>
+    <div class="flex justify-center space-x-4"><button id="modal-close-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 px-6 rounded-lg">Go Back</button><button id="modal-confirm-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-lg">Yes, Cancel</button></div>
+  </div>
+</div>
+
+<div id="toast" class="fixed top-5 right-5 z-[100] text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast"><p id="toast-message"></p></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const reservationsContainer = document.getElementById('reservations-container');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const noReservationsMessage = document.getElementById('no-reservations');
+    const cancelModal = document.getElementById('cancel-modal');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    let bookingToCancelId = null;
+    let allBallrooms = [];
+
+    // START: New element references for edit modal
+    const editModal = document.getElementById('edit-modal');
+    const editBookingForm = document.getElementById('edit-booking-form');
+    const editBookingIdInput = document.getElementById('edit-booking-id');
+    const editDateInput = document.getElementById('edit-booking-date');
+    const editBallroomSelect = document.getElementById('edit-ballroom-select');
+    // END: New element references
+
+    const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const showToast = (message, isError = false) => {
+      toastMessage.textContent = message;
+      toast.className = `fixed top-5 right-5 z-[100] text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast ${isError ? 'bg-red-500' : 'bg-green-600'}`;
+      toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+      setTimeout(() => toast.classList.add('opacity-100', 'translate-y-0'), 10);
+      setTimeout(() => toast.classList.add('opacity-0', 'translate-y-[-20px]'), 3000);
+    };
+
+    const openModal = (modal) => {
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+    };
+    const closeModal = (modal) => {
+      modal.querySelector('.modal-content').classList.remove('show');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    };
+
+    document.querySelectorAll('.close-modal-btn, #modal-close-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        closeModal(btn.closest('.modal-backdrop'));
+      });
+    });
+
+    // START: New functions for edit feature
+    async function loadBallrooms() {
+      try {
+        const res = await fetch('/api/bookings/ballrooms');
+        if(!res.ok) throw new Error("Could not load ballrooms.");
+        allBallrooms = await res.json();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    }
+
+    function populateBallroomSelect(selectElement, selectedId) {
+      selectElement.innerHTML = '';
+      allBallrooms.forEach(b => {
+        const option = document.createElement('option');
+        option.value = b.id;
+        option.textContent = b.name;
+        if (b.id == selectedId) {
+          option.selected = true;
+        }
+        selectElement.appendChild(option);
+      });
+    }
+    // END: New functions for edit feature
+
+    try {
+      const response = await fetch('/api/bookings/my-bookings');
+      if (response.status === 401) {
+        window.location.href = 'login.html?redirect=reservations.html';
+        return;
+      }
+      if (!response.ok) throw new Error('Failed to fetch reservations.');
+      const bookings = await response.json();
+      loadingSpinner.classList.add('hidden');
+
+      if (bookings.length === 0) {
+        noReservationsMessage.classList.remove('hidden');
+      } else {
+        bookings.forEach(booking => {
+          const bookingCard = document.createElement('div');
+          bookingCard.className = 'booking-card bg-white p-6 rounded-lg shadow-sm border border-gray-200';
+          bookingCard.dataset.id = booking.id;
+          bookingCard.innerHTML = `
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-4 mb-4">
+                <div>
+                    <p class="text-sm text-gray-500">Booking ID: #${String(booking.id).padStart(6, '0')}</p>
+                    <h2 class="booking-ballroom text-xl font-semibold text-gray-800">${booking.ballroom.name}</h2>
+                </div>
+                <div class="mt-4 md:mt-0 md:text-right">
+                    <p class="booking-price text-2xl font-light text-amber-600">LKR ${booking.totalPrice.toLocaleString()}</p>
+                    <p class="text-sm font-semibold text-green-600 mt-1">Confirmed</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500 font-medium">Event Date</p>
+                    <p class="booking-date text-gray-800">${formatDate(booking.bookingDate)}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 font-medium">Package</p>
+                    <p class="booking-package text-gray-800">${booking.weddingPackage.name}</p>
+                </div>
+            </div>
+            <div class="border-t mt-4 pt-4 flex justify-end items-center space-x-4">
+              <button class="edit-btn text-sm font-semibold text-blue-600 hover:text-blue-800 transition" data-booking='${JSON.stringify(booking)}'>Edit Details</button>
+              <button class="cancel-btn text-sm font-semibold text-red-600 hover:text-red-800 transition" data-id="${booking.id}">Cancel Booking</button>
+            </div>
+            `;
+          reservationsContainer.appendChild(bookingCard);
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      loadingSpinner.classList.add('hidden');
+      reservationsContainer.innerHTML = '<p class="text-center text-red-500">Could not load your reservations. Please try again later.</p>';
+    }
+
+    reservationsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('cancel-btn')) {
+        bookingToCancelId = e.target.dataset.id;
+        openModal(cancelModal);
+      }
+      // START: New event listener for edit button
+      if (e.target.classList.contains('edit-btn')) {
+        const bookingData = JSON.parse(e.target.dataset.booking);
+        editBookingIdInput.value = bookingData.id;
+        editDateInput.value = bookingData.bookingDate; // Date format YYYY-MM-DD
+        populateBallroomSelect(editBallroomSelect, bookingData.ballroom.id);
+        openModal(editModal);
+      }
+      // END: New event listener
+    });
+
+    document.getElementById('modal-confirm-btn').addEventListener('click', async () => {
+      if (!bookingToCancelId) return;
+      try {
+        const response = await fetch(`/api/bookings/${bookingToCancelId}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to cancel the booking.');
+        document.querySelector(`.booking-card[data-id="${bookingToCancelId}"]`)?.remove();
+        showToast('Reservation canceled successfully.');
+        if (reservationsContainer.children.length === 0) noReservationsMessage.classList.remove('hidden');
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        closeModal(cancelModal);
+        bookingToCancelId = null;
+      }
+    });
+
+    // START: New listener for edit form submission
+    editBookingForm.addEventListener('submit', async(e) => {
+      e.preventDefault();
+      const bookingId = editBookingIdInput.value;
+      const updatedData = {
+        bookingDate: editDateInput.value,
+        ballroomId: editBallroomSelect.value
+      };
+
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Failed to update booking.");
+
+        // Update the UI
+        const cardToUpdate = document.querySelector(`.booking-card[data-id="${bookingId}"]`);
+        if (cardToUpdate) {
+          cardToUpdate.querySelector('.booking-date').textContent = formatDate(result.bookingDate);
+          cardToUpdate.querySelector('.booking-ballroom').textContent = result.ballroom.name;
+        }
+        showToast("Booking updated successfully!");
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        closeModal(editModal);
+      }
+    });
+    // END: New listener
+
+    loadBallrooms(); // Load all ballrooms on page load for the edit modal
+  });
+</script>
+</body>
+</html>

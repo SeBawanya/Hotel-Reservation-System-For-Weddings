@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Manage Wedding Packages</title>
+  <link rel="icon" href="images/LOGO.ai.png" type="image/x-icon">
+  <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.5);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+    .toast {
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+    input:focus, textarea:focus {
+      --tw-ring-color: #f59e0b;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white sticky top-0 z-40 border-b border-slate-200">
+  <div class="container mx-auto px-4 lg:px-8">
+    <div class="flex justify-between items-center py-3">
+      <a href="index.html">
+        <img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-14">
+      </a>
+      <div class="flex items-center space-x-6">
+        <a href="/admin-dashboard.html" class="text-sm font-semibold text-slate-600 hover:text-amber-600">
+          <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+        </a>
+        <a href="/logout" class="text-slate-500 hover:text-amber-600" title="Logout">
+          <i class="fas fa-sign-out-alt text-2xl"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="container mx-auto px-4 lg:px-8 py-8 md:py-12">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800">Wedding Packages</h1>
+      <p class="mt-1 text-slate-500">Create, edit, and manage all wedding packages from this panel.</p>
+    </div>
+    <button id="add-package-btn" class="mt-4 md:mt-0 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-5 rounded-lg transition-transform duration-200 hover:scale-105 shadow-sm flex items-center">
+      <i class="fas fa-plus mr-2"></i> Add New Package
+    </button>
+  </div>
+
+  <div id="package-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  </div>
+</main>
+
+<div id="package-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4 overflow-y-auto">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 scale-95 opacity-0 my-8">
+    <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
+      <h2 id="modal-title" class="text-xl font-semibold text-slate-800">Add New Package</h2>
+      <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+    <form id="package-form" class="p-6 space-y-5">
+      <input type="hidden" id="package-id">
+      <div>
+        <label for="name" class="block text-sm font-medium text-slate-600 mb-1">Package Name</label>
+        <input type="text" id="name" name="name" class="mt-1 block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required>
+      </div>
+      <div>
+        <label for="price" class="block text-sm font-medium text-slate-600 mb-1">Base Price (LKR)</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">LKR</span>
+          <input type="number" id="price" name="price" step="0.01" class="mt-1 block w-full border border-slate-300 rounded-lg shadow-sm py-2 pl-12 pr-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required>
+        </div>
+      </div>
+      <div>
+        <label for="services" class="block text-sm font-medium text-slate-600 mb-1">Included Services (one per line)</label>
+        <textarea id="services" name="services" rows="4" class="mt-1 block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required></textarea>
+      </div>
+      <div>
+        <label for="description" class="block text-sm font-medium text-slate-600 mb-1">Description</label>
+        <textarea id="description" name="description" rows="3" class="mt-1 block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" required></textarea>
+      </div>
+      <div class="pt-4 border-t border-slate-200">
+        <label class="block text-sm font-medium text-slate-600 mb-2">Optional Add-on Services</label>
+        <div id="optional-services-container" class="space-y-3">
+        </div>
+        <button type="button" id="add-optional-service-btn" class="mt-3 text-sm font-semibold text-amber-600 hover:text-amber-700 flex items-center">
+          <i class="fas fa-plus-circle mr-2"></i> Add Optional Service
+        </button>
+      </div>
+      <div class="flex justify-end space-x-4 pt-4 border-t border-slate-200 sticky bottom-0 bg-white py-4">
+        <button type="button" id="cancel-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-6 rounded-lg transition duration-200">Cancel</button>
+        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-sm">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-300 scale-95 opacity-0 text-center p-8">
+    <div class="mx-auto bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+      <i class="fas fa-trash-alt text-3xl text-red-500"></i>
+    </div>
+    <h2 class="text-xl font-semibold text-slate-800 mb-2">Confirm Deletion</h2>
+    <p class="text-slate-600 mb-6">Are you sure you want to delete the package "<span id="delete-package-name" class="font-bold"></span>"? This action cannot be undone.</p>
+    <div class="flex justify-center space-x-4">
+      <button id="cancel-delete-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-6 rounded-lg transition duration-200">Cancel</button>
+      <button id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed top-5 right-5 z-[100] bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast">
+  <p id="toast-message"></p>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const API_URL = '/api/packages';
+    const packageList = document.getElementById('package-list');
+    const addPackageBtn = document.getElementById('add-package-btn');
+    const packageModal = document.getElementById('package-modal');
+    const deleteModal = document.getElementById('delete-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const packageForm = document.getElementById('package-form');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const optionalServicesContainer = document.getElementById('optional-services-container');
+    const addOptionalServiceBtn = document.getElementById('add-optional-service-btn');
+
+    let packageToDeleteId = null;
+    let packages = [];
+
+    const showToast = (message, isError = false) => {
+      toastMessage.textContent = message;
+      toast.className = `fixed top-5 right-5 z-[100] text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast ${isError ? 'bg-red-500' : 'bg-green-600'}`;
+      toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-[-20px]');
+      }, 3000);
+    };
+
+    const openModal = (modalElement) => {
+      modalElement.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => {
+        const modalContent = modalElement.querySelector('div[class*="bg-white"]');
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    };
+
+    const closeModal = (modalElement) => {
+      const modalContent = modalElement.querySelector('div[class*="bg-white"]');
+      modalContent.classList.add('scale-95', 'opacity-0');
+      modalContent.classList.remove('scale-100', 'opacity-100');
+      setTimeout(() => {
+        modalElement.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    };
+
+    const createOptionalServiceRow = (service = {}) => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center space-x-2 optional-service-row';
+      div.innerHTML = `
+            <input type="text" placeholder="Service Name" class="flex-grow border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition optional-service-name" value="${service.name || ''}" required>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 text-sm">LKR</span>
+                <input type="number" placeholder="Price" step="0.01" class="w-40 border border-slate-300 rounded-lg shadow-sm py-2 pl-10 pr-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition optional-service-price" value="${service.price || ''}" required>
+            </div>
+            <button type="button" class="text-slate-400 hover:text-red-500 remove-optional-service-btn"><i class="fas fa-trash"></i></button>
+        `;
+      optionalServicesContainer.appendChild(div);
+    };
+
+    addOptionalServiceBtn.addEventListener('click', () => createOptionalServiceRow());
+
+    optionalServicesContainer.addEventListener('click', e => {
+      if (e.target.closest('.remove-optional-service-btn')) {
+        e.target.closest('.optional-service-row').remove();
+      }
+    });
+
+    const renderPackages = () => {
+      packageList.innerHTML = '';
+      if (packages.length === 0) {
+        packageList.innerHTML = `<div class="col-span-full text-center py-12 bg-slate-100 rounded-xl border-2 border-dashed border-slate-200"><p class="text-slate-500">No wedding packages have been created yet.</p></div>`;
+        return;
+      }
+      packages.forEach(pkg => {
+        let totalPrice = pkg.price;
+        let optionalServicesHtml = '';
+        if(pkg.optionalServices && pkg.optionalServices.length > 0) {
+          optionalServicesHtml += '<div class="mt-4 pt-4 border-t border-slate-200"><h4 class="font-semibold text-slate-600 text-xs uppercase tracking-wider mb-2">Add-ons</h4><ul class="space-y-1.5">';
+          pkg.optionalServices.forEach(s => {
+            optionalServicesHtml += `<li class="flex justify-between text-sm text-slate-500"><span>${s.name}</span><span>+ LKR ${s.price.toLocaleString()}</span></li>`;
+            totalPrice += s.price;
+          });
+          optionalServicesHtml += '</ul></div>';
+        }
+
+        const servicesHtml = (pkg.services || '').split('\n').map(s => `<li class="flex items-start text-sm"><i class="fas fa-check-circle text-amber-500 mt-1 mr-2.5"></i><span class="text-slate-600">${s}</span></li>`).join('');
+
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col border border-slate-200';
+        card.innerHTML = `
+                <div class="p-6 flex-grow">
+                    <h3 class="text-lg font-bold text-slate-800">${pkg.name}</h3>
+                    <p class="text-slate-500 text-sm mb-4 leading-relaxed">${pkg.description}</p>
+                    <p class="text-2xl font-light text-amber-600 my-2">LKR ${pkg.price.toLocaleString()}</p>
+                    <ul class="space-y-2.5 mb-4">
+                        ${servicesHtml}
+                    </ul>
+                    ${optionalServicesHtml}
+                </div>
+                <div class="bg-slate-50 p-4 border-t border-slate-200">
+                    <div class="flex justify-between items-center mb-3">
+                         <span class="text-xs text-slate-500 font-medium">TOTAL PRICE</span>
+                         <span class="text-lg font-bold text-slate-800">LKR ${totalPrice.toLocaleString()}</span>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button class="edit-btn text-sm font-semibold text-slate-600 hover:text-blue-600 transition" data-id="${pkg.id}"><i class="fas fa-pencil-alt mr-1"></i> Edit</button>
+                        <button class="delete-btn text-sm font-semibold text-slate-600 hover:text-red-600 transition" data-id="${pkg.id}" data-name="${pkg.name}"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+                    </div>
+                </div>
+            `;
+        packageList.appendChild(card);
+      });
+    };
+
+    const fetchPackages = async () => {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Failed to fetch packages');
+        packages = await response.json();
+        renderPackages();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    };
+
+    addPackageBtn.addEventListener('click', () => {
+      packageForm.reset();
+      document.getElementById('package-id').value = '';
+      optionalServicesContainer.innerHTML = '';
+      modalTitle.textContent = 'Add New Package';
+      openModal(packageModal);
+    });
+
+    cancelBtn.addEventListener('click', () => closeModal(packageModal));
+    closeBtn.addEventListener('click', () => closeModal(packageModal));
+    cancelDeleteBtn.addEventListener('click', () => closeModal(deleteModal));
+
+    packageList.addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.edit-btn');
+      if (editBtn) {
+        const id = editBtn.dataset.id;
+        const pkg = packages.find(p => p.id == id);
+        if (pkg) {
+          document.getElementById('package-id').value = pkg.id;
+          document.getElementById('name').value = pkg.name;
+          document.getElementById('price').value = pkg.price;
+          document.getElementById('services').value = pkg.services;
+          document.getElementById('description').value = pkg.description;
+
+          optionalServicesContainer.innerHTML = '';
+          if(pkg.optionalServices) {
+            pkg.optionalServices.forEach(s => createOptionalServiceRow(s));
+          }
+
+          modalTitle.textContent = 'Edit Package';
+          openModal(packageModal);
+        }
+      }
+      const deleteBtn = e.target.closest('.delete-btn');
+      if (deleteBtn) {
+        packageToDeleteId = deleteBtn.dataset.id;
+        const name = deleteBtn.dataset.name;
+        document.getElementById('delete-package-name').textContent = name;
+        openModal(deleteModal);
+      }
+    });
+
+    packageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const packageData = {
+        name: document.getElementById('name').value.trim(),
+        price: Number(document.getElementById('price').value.trim()),
+        services: document.getElementById('services').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        optionalServices: []
+      };
+
+      document.querySelectorAll('.optional-service-row').forEach(row => {
+        const name = row.querySelector('.optional-service-name').value.trim();
+        const price = row.querySelector('.optional-service-price').value.trim();
+        if(name && price && !isNaN(price)) {
+          packageData.optionalServices.push({ name, price: Number(price) });
+        }
+      });
+
+      const id = document.getElementById('package-id').value;
+      const isEditing = !!id;
+      const url = isEditing ? `${API_URL}/${id}` : API_URL;
+      const method = isEditing ? 'PUT' : 'POST';
+
+      try {
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(packageData)
+        });
+        if (!response.ok) throw new Error(`Failed to ${isEditing ? 'update' : 'add'} package`);
+
+        showToast(`Package ${isEditing ? 'Updated' : 'Added'} Successfully!`);
+        closeModal(packageModal);
+        fetchPackages();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!packageToDeleteId) return;
+      try {
+        const response = await fetch(`${API_URL}/${packageToDeleteId}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to delete package');
+        showToast('Package Deleted Successfully!');
+        closeModal(deleteModal);
+        fetchPackages();
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        packageToDeleteId = null;
+      }
+    });
+
+    fetchPackages();
+  });
+</script>
+
+</body>
+</html>

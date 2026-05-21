@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Palm Grand Hotel</title>
+    <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'Span Cond Light';
+            src: url('/fonts/fonnts.com-Span-Cond-Light.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        main { font-family: 'Span Cond Light', sans-serif; }
+        .hero-bg {
+            background-image: url('/images/Hero.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .join-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dcb775' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Header -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <!-- Top Header -->
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex justify-between items-center py-2 border-b border-gray-200">
+            <img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-16">
+
+            <div class="hidden md:flex items-center space-x-6 text-sm text-gray-600">
+                <!-- Links for Logged Out Users -->
+                <div id="auth-links-desktop">
+                    <a href="login.html" class="hover:text-amber-600"><i class="fas fa-user mr-1"></i> Sign In</a>
+                    <a href="register.html" class="hover:text-amber-600 ml-4">Join Now</a>
+                </div>
+                <!-- Info for Logged In Users -->
+                <div id="user-info-desktop" class="hidden items-center">
+                    <span id="welcome-message-desktop" class="font-semibold"></span>
+                    <a href="profile.html" class="ml-4 hover:text-amber-600 font-semibold">My Profile</a>
+                    <a href="reservations.html" class="ml-4 hover:text-amber-600">My Reservations</a>
+                    <a href="/logout" id="logout-link-desktop" class="hover:text-amber-600 ml-4 cursor-pointer">Logout</a>
+                </div>
+            </div>
+
+            <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+    <!-- Main Navigation -->
+    <nav class="hidden md:block">
+        <div class="container mx-auto px-4 lg:px-8 flex justify-between items-center py-3">
+            <div class="flex space-x-8 font-semibold text-gray-700 text-sm">
+                <a href="#" class="hover:text-amber-600 flex items-center">HOTELS & RESORTS <i class="fas fa-chevron-down ml-2 text-xs"></i></a>
+                <a href="#" class="hover:text-amber-600">OFFERS</a>
+                <a href="#" class="hover:text-amber-600 flex items-center">EXPERIENCES <i class="fas fa-chevron-down ml-2 text-xs"></i></a>
+                <a href="#" class="hover:text-amber-600">RESTAURANTS & BARS</a>
+            </div>
+            <div class="flex space-x-8 font-semibold text-gray-700 text-sm">
+                <a href="#" class="hover:text-amber-600">GOLDEN-PALM CIRCLE</a>
+                <a href="packages.html" class="hover:text-amber-600">GOLDEN-PALM PACKAGES</a>
+            </div>
+        </div>
+    </nav>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 border-t border-gray-200">
+        <a href="#" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">HOTELS & RESORTS</a>
+        <a href="#" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">OFFERS</a>
+        <a href="#" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">EXPERIENCES</a>
+        <a href="#" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">RESTAURANTS & BARS</a>
+        <a href="#" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">GOLDEN-PALM CIRCLE</a>
+        <a href="packages.html" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">GOLDEN-PALM PACKAGES</a>
+        <div class="border-t mt-4 pt-4 space-y-2">
+            <!-- Auth Links -->
+            <div id="auth-links-mobile">
+                <a href="login.html" class="block py-2 text-gray-700 hover:bg-gray-100 rounded"><i class="fas fa-user mr-1"></i> Sign In</a>
+                <a href="register.html" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">Join Now</a>
+            </div>
+            <div id="user-info-mobile" class="hidden">
+                <span id="welcome-message-mobile" class="block py-2 font-semibold text-amber-700"></span>
+                <a href="profile.html" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">My Profile</a>
+                <a href="reservations.html" class="block py-2 text-gray-700 hover:bg-gray-100 rounded">My Reservations</a>
+                <a href="/logout" id="logout-link-mobile" class="block py-2 text-gray-700 hover:bg-gray-100 rounded cursor-pointer">Logout</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-bg h-[75vh] relative text-white flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div id="slides-container" class="relative z-10 text-center transition-opacity duration-500"></div>
+        <button id="prev-slide" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 text-white bg-black/30 p-3 rounded-full hover:bg-black/50 transition"><i class="fas fa-chevron-left"></i></button>
+        <button id="next-slide" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 text-white bg-black/30 p-3 rounded-full hover:bg-black/50 transition"><i class="fas fa-chevron-right"></i></button>
+        <div id="dots-container" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2"></div>
+    </section>
+
+    <!-- Wedding Venue Availability Checker Section -->
+    <div class="bg-white transform -translate-y-1/2 container mx-auto p-4 md:p-6 rounded-lg shadow-lg relative z-20 max-w-6xl">
+        <div class="bg-amber-50 border border-amber-200 rounded-md p-3 flex justify-between items-center mb-6 text-sm">
+            <p class="text-amber-800"><i class="fas fa-calendar-check mr-2"></i>Check wedding venue availability for your special day.</p>
+        </div>
+        <form id="availability-checker-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="md:col-span-1">
+                <label for="check-date" class="block text-xs font-medium text-gray-500 mb-1">Preferred Date</label>
+                <div class="relative">
+                    <i class="fas fa-calendar-alt absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="date" id="check-date" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500">
+                </div>
+            </div>
+            <div class="md:col-span-1">
+                <label for="check-ballroom" class="block text-xs font-medium text-gray-500 mb-1">Select Ballroom</label>
+                <div class="relative">
+                    <i class="fas fa-place-of-worship absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <select id="check-ballroom" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="md:col-span-1">
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 h-full">Check Availability</button>
+            </div>
+        </form>
+        <div id="checker-result" class="mt-4 text-center min-h-[24px]"></div>
+        <div id="proceed-booking-container" class="mt-2 text-center hidden">
+            <a href="booking.html" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-transform duration-200 hover:scale-105 shadow-sm inline-block">
+                Proceed to Booking <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Join Section -->
+    <section class="join-bg py-16 lg:py-24">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-light text-gray-800 mb-4">Join Golden-Palm Circle today</h2>
+                    <p class="text-gray-600 leading-relaxed mb-8">
+                        Whether you're here for a bite or a string of nights, join as a member to enjoy exclusive benefits and a seamless digital experience.
+                    </p>
+                    <a href="register.html" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-md transition duration-300">Join Now</a>
+                </div>
+                <div class="grid grid-cols-2 gap-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full border-2 border-amber-400 flex items-center justify-center mb-3">
+                            <i class="fas fa-award text-3xl text-amber-500"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-700">Member Exclusive Offers</h3>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full border-2 border-amber-400 flex items-center justify-center mb-3">
+                            <i class="fas fa-mobile-alt text-3xl text-amber-500"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-700">Mobile Check-in & Out</h3>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full border-2 border-amber-400 flex items-center justify-center mb-3">
+                            <i class="fas fa-wifi text-3xl text-amber-500"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-700">Complimentary Wi-Fi</h3>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full border-2 border-amber-400 flex items-center justify-center mb-3">
+                            <i class="fas fa-concierge-bell text-3xl text-amber-500"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-700">24/7 Member Services</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="text-sm">
+    <div class="bg-gray-100 py-12">
+        <div class="container mx-auto px-4 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-700">
+            <div><h4 class="font-semibold mb-3">Golden-Palm Colombo</h4><p>Address: Sittarakala Estate, Shangri-La Mawatha, Chithragala, Ambalantota Sri Lanka</p><p>Phone: (94 11) 788 8288</p><p>E-mail: slcb@golden-palm.com</p></div>
+            <div><h4 class="font-semibold mb-3">Check-in / Check-out</h4><p class="mb-2">We hope you've enjoyed your stay from start to finish. Please note the check-in / out times below:</p><p>Check-in: 2pm</p><p>Check-out: 12 noon</p></div>
+            <div><h4 class="font-semibold mb-3">Payment Methods</h4><p class="mb-3">Online payment methods we accept as selected platforms:</p><div class="flex items-center space-x-3 text-2xl text-gray-500"><i class="fab fa-cc-amex"></i><i class="fab fa-cc-diners-club"></i><i class="fab fa-cc-jcb"></i><i class="fab fa-cc-mastercard"></i><i class="fab fa-cc-visa"></i><i class="fab fa-cc-apple-pay"></i></div></div>
+        </div>
+    </div>
+    <div class="bg-gray-800 text-gray-300 py-12">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+                <div class="col-span-1"><h5 class="font-bold text-white mb-4">Find & Book</h5><ul class="space-y-2"><li><a href="#" class="hover:text-white">Our Destinations</a></li><li><a href="#" class="hover:text-white">Find a Reservation</a></li><li><a href="#" class="hover:text-white">Meetings & Events</a></li><li><a href="#" class="hover:text-white">Restaurant & Bars</a></li></ul></div>
+                <div class="col-span-1"><h5 class="font-bold text-white mb-4">Golden-Palm Circle</h5><ul class="space-y-2"><li><a href="#" class="hover:text-white">Programme Overview</a></li><li><a href="#" class="hover:text-white">Join Golden-Palm Circle</a></li><li><a href="#" class="hover:text-white">Account Overview</a></li><li><a href="#" class="hover:text-white">FAQ</a></li><li><a href="#" class="hover:text-white">Contact Us</a></li></ul></div>
+                <div class="col-span-1"><h5 class="font-bold text-white mb-4">About Golden-Palm</h5><ul class="space-y-2"><li><a href="#" class="hover:text-white">About Us</a></li><li><a href="#" class="hover:text-white">Our Hotel Brands</a></li><li><a href="#" class="hover:text-white">Residences</a></li><li><a href="#" class="hover:text-white">Contact Us</a></li><li><a href="#" class="hover:text-white">Investors</a></li><li><a href="#" class="hover:text-white">Careers</a></li><li><a href="#" class="hover:text-white">Global Citizenship</a></li><li><a href="#" class="hover:text-white">News</a></li></ul></div>
+                <div class="col-span-2 md:col-span-2">
+                    <div class="flex justify-between items-center mb-4">
+                        <h5 class="font-bold text-white">Golden-Palm Circle App</h5>
+                        <a href="#" class="text-sm text-white underline hover:no-underline">Learn More</a>
+                    </div>
+                    <p class="mb-4">Stay, Dine, Shop Anytime Anywhere</p>
+                    <div class="flex space-x-4">
+                        <img src="images/QR.png" alt="QR Code" class="rounded-md">
+                        <!-- START OF MODIFICATION: App download buttons have been removed -->
+                        <!-- The div containing the three buttons was here -->
+                        <!-- END OF MODIFICATION -->
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 flex justify-center space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-weibo text-xl"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // --- Mobile menu toggle ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // --- Hero Carousel ---
+    const slidesData = [
+        { logoUrl: '/images/LinkedinArtboard 1.png', title: 'Golden Palm Grand Hotel', link: '#' },
+        { title: 'Discover Paradise', subtitle: 'Unforgettable moments await at our beachfront resorts', link: '#' },
+        { title: 'Urban Oasis Awaits', subtitle: 'Experience luxury in the heart of the city', link: '#' }
+    ];
+    const slidesContainer = document.getElementById('slides-container');
+    const dotsContainer = document.getElementById('dots-container');
+    const prevButton = document.getElementById('prev-slide');
+    const nextButton = document.getElementById('next-slide');
+    let currentSlide = 0;
+    let slideInterval;
+    function renderSlide(index){const slide=slidesData[index];slidesContainer.style.opacity="0";setTimeout(()=>{let logoHtml=slide.logoUrl?`<img src="${slide.logoUrl}" alt="Hotel Logo" class="h-24 mx-auto mb-4 opacity-75">`:"";let subtitleHtml=slide.subtitle?`<p class="mt-4 text-lg md:text-xl">${slide.subtitle}</p>`:"";slidesContainer.innerHTML=`
+                    ${logoHtml}
+                    <h1 class="text-4xl md:text-6xl font-light tracking-tight">${slide.title}</h1>
+                    ${subtitleHtml}
+                    <a href="${slide.link}" class="inline-block mt-8 font-semibold border-b-2 border-amber-400 pb-1 hover:text-amber-300 hover:border-amber-300 transition">
+                        Book Now <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                    </a>`;slidesContainer.style.opacity="1";updateDots()},500)}
+    function updateDots(){dotsContainer.innerHTML="";slidesData.forEach((_,index)=>{const dot=document.createElement("button");dot.classList.add("w-2","h-2","rounded-full","transition");dot.classList.toggle("bg-white",index===currentSlide);dot.classList.toggle("bg-white/50",index!==currentSlide);dot.addEventListener("click",()=>{currentSlide=index;renderSlide(currentSlide);resetInterval()});dotsContainer.appendChild(dot)})}
+    function next(){currentSlide=(currentSlide+1)%slidesData.length;renderSlide(currentSlide)}
+    function prev(){currentSlide=(currentSlide-1+slidesData.length)%slidesData.length;renderSlide(currentSlide)}
+    function resetInterval(){clearInterval(slideInterval);slideInterval=setInterval(next,5000)}
+    prevButton.addEventListener("click",()=>{prev();resetInterval()});nextButton.addEventListener("click",()=>{next();resetInterval()});renderSlide(currentSlide);slideInterval=setInterval(next,5000);
+
+    // --- Availability Checker & Auth Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Auth elements
+        const authLinksDesktop = document.getElementById('auth-links-desktop');
+        const userInfoDesktop = document.getElementById('user-info-desktop');
+        const welcomeMessageDesktop = document.getElementById('welcome-message-desktop');
+        const logoutLinkDesktop = document.getElementById('logout-link-desktop');
+        const authLinksMobile = document.getElementById('auth-links-mobile');
+        const userInfoMobile = document.getElementById('user-info-mobile');
+        const welcomeMessageMobile = document.getElementById('welcome-message-mobile');
+        const logoutLinkMobile = document.getElementById('logout-link-mobile');
+
+        // Availability Checker elements
+        const checkDateInput = document.getElementById('check-date');
+        const checkBallroomSelect = document.getElementById('check-ballroom');
+        const checkerForm = document.getElementById('availability-checker-form');
+        const checkerResult = document.getElementById('checker-result');
+        const proceedContainer = document.getElementById('proceed-booking-container');
+
+        // Check user authentication status
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                if (data.isAuthenticated) {
+                    // Show user info, hide auth links
+                    authLinksDesktop.classList.add('hidden');
+                    userInfoDesktop.classList.remove('hidden');
+                    userInfoDesktop.classList.add('flex');
+                    welcomeMessageDesktop.textContent = `Welcome, ${data.name}`;
+
+                    authLinksMobile.classList.add('hidden');
+                    userInfoMobile.classList.remove('hidden');
+                    welcomeMessageMobile.textContent = `Welcome, ${data.name}`;
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+            }
+        }
+
+        // Logout functionality
+        async function handleLogout(e) {
+            e.preventDefault();
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                window.location.href = '/index.html';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        logoutLinkDesktop.addEventListener('click', handleLogout);
+        logoutLinkMobile.addEventListener('click', handleLogout);
+
+        const today = new Date().toISOString().split('T')[0];
+        checkDateInput.setAttribute('min', today);
+
+        async function loadBallrooms() {
+            try {
+                const response = await fetch('/api/bookings/ballrooms');
+                if (!response.ok) throw new Error('Could not load venues');
+                const ballrooms = await response.json();
+                checkBallroomSelect.innerHTML = '<option value="">Select a ballroom</option>';
+                ballrooms.forEach(b => {
+                    const option = document.createElement('option');
+                    option.value = b.id;
+                    option.textContent = b.name;
+                    checkBallroomSelect.appendChild(option);
+                });
+            } catch (error) {
+                checkBallroomSelect.innerHTML = `<option value="">Error loading venues</option>`;
+                console.error(error);
+            }
+        }
+
+        checkerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const date = checkDateInput.value;
+            const ballroomId = checkBallroomSelect.value;
+            checkerResult.innerHTML = '';
+            proceedContainer.classList.add('hidden');
+            if (!date || !ballroomId) {
+                checkerResult.innerHTML = `<p class="text-red-500 font-semibold">Please select both a date and a ballroom.</p>`;
+                return;
+            }
+            checkerResult.innerHTML = `<p class="text-slate-500">Checking...</p>`;
+            try {
+                const response = await fetch('/api/bookings/check-availability', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ballroomId, date })
+                });
+                const result = await response.json();
+                if (result.isAvailable) {
+                    checkerResult.innerHTML = `<p class="text-green-600 font-semibold"><i class="fas fa-check-circle mr-2"></i>This venue is available!</p>`;
+                    proceedContainer.classList.remove('hidden');
+                } else {
+                    checkerResult.innerHTML = `<p class="text-red-500 font-semibold"><i class="fas fa-times-circle mr-2"></i>Sorry, this venue is booked. Please try another date or venue.</p>`;
+                }
+            } catch (error) {
+                checkerResult.innerHTML = `<p class="text-red-500 font-semibold">An error occurred. Please try again.</p>`;
+            }
+        });
+
+        checkAuthStatus();
+        loadBallrooms();
+    });
+</script>
+</body>
+</html>

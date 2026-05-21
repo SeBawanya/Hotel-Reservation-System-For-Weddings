@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Manage Customers</title>
+  <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .toast { transition: opacity 0.3s ease, transform 0.3s ease; }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      transform: scale(0.95);
+      opacity: 0;
+      transition: all 0.2s ease-in-out;
+    }
+    .modal-content.show {
+      transform: scale(1);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white sticky top-0 z-40 border-b border-slate-200">
+  <div class="container mx-auto px-4 lg:px-8">
+    <div class="flex justify-between items-center py-3">
+      <a href="index.html"><img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-14"></a>
+      <a href="/admin-dashboard.html" class="text-sm font-semibold text-slate-600 hover:text-amber-600">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 lg:px-8 py-8 md:py-12">
+  <div class="mb-10">
+    <h1 class="text-3xl font-bold text-slate-800">Manage Customers</h1>
+    <p class="mt-1 text-slate-500">View, edit, and manage all registered customer accounts.</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+    <table class="w-full text-left">
+      <thead class="border-b border-slate-200">
+      <tr>
+        <th class="p-4 text-sm font-semibold text-slate-600">Name</th>
+        <th class="p-4 text-sm font-semibold text-slate-600">Email</th>
+        <th class="p-4 text-sm font-semibold text-slate-600">Phone</th>
+        <th class="p-4 text-sm font-semibold text-slate-600 text-right">Actions</th>
+      </tr>
+      </thead>
+      <tbody id="customer-table-body">
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+  <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md">
+    <div class="p-4 border-b flex justify-between items-center">
+      <h2 class="text-xl font-semibold">Edit Customer Details</h2>
+      <button class="close-modal-btn text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+    <form id="edit-customer-form" class="p-6 space-y-4">
+      <input type="hidden" id="edit-customer-id">
+      <div>
+        <label for="edit-name" class="block text-sm font-medium text-slate-600 mb-1">Full Name</label>
+        <input type="text" id="edit-name" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500" required>
+      </div>
+      <div>
+        <label for="edit-email" class="block text-sm font-medium text-slate-600 mb-1">Email Address</label>
+        <input type="email" id="edit-email" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500" required>
+      </div>
+      <div>
+        <label for="edit-phone" class="block text-sm font-medium text-slate-600 mb-1">Phone Number</label>
+        <input type="tel" id="edit-phone" class="w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-amber-500">
+      </div>
+      <div class="pt-2 flex justify-end space-x-3">
+        <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden p-4">
+  <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md text-center p-6">
+    <div class="mx-auto bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+      <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+    </div>
+    <h2 class="text-xl font-semibold">Confirm Deletion</h2>
+    <p class="text-gray-600 my-4">Are you sure you want to delete the user <strong id="delete-customer-name"></strong>?</p>
+    <div class="flex justify-center space-x-3">
+      <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
+      <button id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed top-5 right-5 z-[100] text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast">
+  <p id="toast-message"></p>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tableBody = document.getElementById('customer-table-body');
+    const editModal = document.getElementById('edit-modal');
+    const editCustomerForm = document.getElementById('edit-customer-form');
+    const editCustomerId = document.getElementById('edit-customer-id');
+    const editName = document.getElementById('edit-name');
+    const editEmail = document.getElementById('edit-email');
+    const editPhone = document.getElementById('edit-phone');
+    const deleteModal = document.getElementById('delete-modal');
+    const deleteCustomerName = document.getElementById('delete-customer-name');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    let customerToDeleteId = null;
+
+    const showToast = (message, isError = false) => {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      toastMessage.textContent = message;
+      toast.className = `fixed top-5 right-5 z-[100] text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] toast ${isError ? 'bg-red-500' : 'bg-green-600'}`;
+      toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-[-20px]');
+      }, 3000);
+    };
+
+    const openModal = (modal) => {
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
+    };
+    const closeModal = (modal) => {
+      if (!modal) return;
+      modal.querySelector('.modal-content').classList.remove('show');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    };
+
+    const renderCustomers = (customers) => {
+      tableBody.innerHTML = '';
+      if (!customers || customers.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-slate-500">No customers found.</td></tr>`;
+        return;
+      }
+      customers.forEach(customer => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-slate-200 last:border-b-0';
+        row.innerHTML = `
+                    <td class="p-4 font-medium text-slate-800">${customer.name}</td>
+                    <td class="p-4 text-slate-600">${customer.email}</td>
+                    <td class="p-4 text-slate-600">${customer.phone || 'N/A'}</td>
+                    <td class="p-4 text-right space-x-4">
+                        <button class="edit-btn text-sm font-semibold text-blue-600 hover:text-blue-800 transition"
+                            data-id="${customer.id}" data-name="${customer.name}" data-email="${customer.email}" data-phone="${customer.phone || ''}">
+                            <i class="fas fa-pencil-alt mr-1"></i> Edit
+                        </button>
+                        <button class="delete-btn text-sm font-semibold text-red-600 hover:text-red-800 transition"
+                            data-id="${customer.id}" data-name="${customer.name}">
+                            <i class="fas fa-trash-alt mr-1"></i> Delete
+                        </button>
+                    </td>
+                `;
+        tableBody.appendChild(row);
+      });
+    };
+
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch('/api/manage/customers');
+        if (!response.ok) {
+          if(response.status === 403) throw new Error("You don't have permission to view this page.");
+          throw new Error('Failed to fetch customers.');
+        }
+        const customers = await response.json();
+
+        // IMPORTANT DEBUG LINE
+        console.log("Data received from server:", customers);
+
+        renderCustomers(customers);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-red-500">${error.message}</td></tr>`;
+      }
+    };
+
+    tableBody.addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.edit-btn');
+      if(editBtn) {
+        editCustomerId.value = editBtn.dataset.id;
+        editName.value = editBtn.dataset.name;
+        editEmail.value = editBtn.dataset.email;
+        editPhone.value = editBtn.dataset.phone;
+        openModal(editModal);
+      }
+
+      const deleteBtn = e.target.closest('.delete-btn');
+      if(deleteBtn) {
+        customerToDeleteId = deleteBtn.dataset.id;
+        deleteCustomerName.textContent = deleteBtn.dataset.name;
+        openModal(deleteModal);
+      }
+    });
+
+    editCustomerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = editCustomerId.value;
+      const updatedCustomer = { name: editName.value, email: editEmail.value, phone: editPhone.value };
+
+      try {
+        const response = await fetch(`/api/manage/customers/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedCustomer)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to update customer.');
+
+        showToast('Customer details updated successfully!');
+        closeModal(editModal);
+        fetchCustomers();
+      } catch(error) {
+        showToast(error.message, true);
+      }
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!customerToDeleteId) return;
+      try {
+        const response = await fetch(`/api/manage/customers/${customerToDeleteId}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to delete customer.');
+        showToast('Customer deleted successfully!');
+        closeModal(deleteModal);
+        fetchCustomers();
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        customerToDeleteId = null;
+      }
+    });
+
+    document.querySelectorAll('.close-modal-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        closeModal(e.target.closest('.modal-backdrop'));
+      });
+    });
+
+    fetchCustomers();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Golden Palm</title>
+    <link rel="icon" href="images/LinkedinArtboard 1.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .nav-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .nav-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white sticky top-0 z-40 border-b border-slate-200">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex justify-between items-center py-3">
+            <a href="index.html"><img src="images/LinkedinArtboard 3.png" alt="Golden-Palm Logo" class="h-14"></a>
+            <div class="flex items-center space-x-6">
+                <div class="text-right">
+                    <p id="admin-name" class="font-semibold text-slate-700">Loading...</p>
+                    <p id="admin-role" class="text-xs text-slate-500 capitalize">Admin Panel</p>
+                </div>
+                <a href="/logout" class="text-slate-500 hover:text-amber-600" title="Logout"><i class="fas fa-sign-out-alt text-2xl"></i></a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 lg:px-8 py-8 md:py-12">
+    <div class="mb-10">
+        <h1 id="welcome-message" class="text-3xl font-bold text-slate-800">Welcome, Admin!</h1>
+        <p class="mt-1 text-slate-500">Select a task below to get started.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <a id="nav-booking" href="booking.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-calendar-plus text-3xl text-amber-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Make a New Booking</h2>
+            <p class="text-slate-500 mt-1 text-sm">Create a new wedding reservation for a customer.</p>
+        </a>
+        <a id="nav-manage-bookings" href="manage-bookings.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-tasks text-3xl text-blue-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Manage All Bookings</h2>
+            <p class="text-slate-500 mt-1 text-sm">View, edit, or cancel existing reservations.</p>
+        </a>
+        <a id="nav-packages" href="admin.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-box-open text-3xl text-green-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Manage Packages</h2>
+            <p class="text-slate-500 mt-1 text-sm">Create and edit wedding package details.</p>
+        </a>
+        <a id="nav-vendors" href="manage-vendors.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-store text-3xl text-indigo-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Manage Vendors</h2>
+            <p class="text-slate-500 mt-1 text-sm">Add and edit trusted third-party suppliers.</p>
+        </a>
+        <a id="nav-ballrooms" href="ballrooms.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-place-of-worship text-3xl text-purple-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Manage Ballrooms</h2>
+            <p class="text-slate-500 mt-1 text-sm">Add or remove available hotel ballrooms.</p>
+        </a>
+        <a id="nav-manage-customers" href="manage-customers.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-users text-3xl text-teal-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Manage Customers</h2>
+            <p class="text-slate-500 mt-1 text-sm">View and manage customer profiles.</p>
+        </a>
+        <a id="nav-manage-admins" href="admin-manage-users.html" class="nav-card bg-white p-8 rounded-xl border border-slate-200 text-center hidden">
+            <div class="mx-auto bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mb-4"><i class="fas fa-users-cog text-3xl text-slate-500"></i></div>
+            <h2 class="text-xl font-semibold text-slate-800">Manage Admin Users</h2>
+            <p class="text-slate-500 mt-1 text-sm">Add new staff members and assign roles.</p>
+        </a>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const welcomeMessage = document.getElementById('welcome-message');
+        const adminName = document.getElementById('admin-name');
+        const adminRole = document.getElementById('admin-role');
+        const nav = {
+            manageBookings: document.getElementById('nav-manage-bookings'),
+            packages: document.getElementById('nav-packages'),
+            ballrooms: document.getElementById('nav-ballrooms'),
+            manageCustomers: document.getElementById('nav-manage-customers'),
+            manageAdmins: document.getElementById('nav-manage-admins'),
+            vendors: document.getElementById('nav-vendors') // Added
+        };
+        try {
+            const response = await fetch('/api/users/status');
+            if (!response.ok) { window.location.href = '/login.html'; return; }
+            const user = await response.json();
+            if (!user.isAuthenticated || user.userType !== 'ADMIN') { window.location.href = '/login.html'; return; }
+            welcomeMessage.textContent = `Welcome, ${user.name}!`;
+            adminName.textContent = user.name;
+            adminRole.textContent = user.role.replace('ROLE_', '').replace('_', ' ');
+
+            const role = user.role;
+            switch(role) {
+                case 'ROLE_IT_OFFICER':
+                    nav.manageAdmins.classList.remove('hidden');
+                case 'ROLE_HOTEL_MANAGER':
+                    nav.manageCustomers.classList.remove('hidden');
+                case 'ROLE_COORDINATOR':
+                    nav.packages.classList.remove('hidden');
+                    nav.ballrooms.classList.remove('hidden');
+                    nav.vendors.classList.remove('hidden'); // Added
+                case 'ROLE_RECEPTIONIST':
+                    nav.manageBookings.classList.remove('hidden');
+                    break;
+            }
+        } catch (error) {
+            console.error('Failed to fetch user status:', error);
+            window.location.href = '/login.html';
+        }
+    });
+</script>
+
+</body>
+</html>

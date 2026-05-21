@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Your Wedding Venue</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .step-active { border-color: #f59e0b; color: #f59e0b; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="antialiased text-slate-700">
+
+<header class="bg-white sticky top-0 z-40 border-b">
+    <div class="container mx-auto px-8 py-3 flex justify-between items-center">
+        <a href="index.html"><img src="images/LinkedinArtboard 3.png" alt="Logo" class="h-14"></a>
+        <a href="index.html" class="text-sm font-semibold text-slate-600 hover:text-amber-600">
+            <i class="fas fa-home mr-2"></i>Back to Home
+        </a>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-slate-800 text-center">Book Your Dream Wedding Venue</h1>
+    <p class="mt-2 text-slate-500 text-center max-w-2xl mx-auto">Follow these steps to secure your date and craft the perfect experience for your special day.</p>
+
+    <section id="step1" class="mt-12">
+        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg border">
+            <div class="flex items-center mb-6">
+                <div class="step-active w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">1</div>
+                <h2 class="ml-4 text-xl font-semibold text-slate-800">Select Date & Venue</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <input type="date" id="booking-date" class="w-full border-slate-300 rounded-lg">
+                <select id="ballroom-select" class="w-full border-slate-300 rounded-lg">
+                    <option value="">Loading ballrooms...</option>
+                </select>
+            </div>
+            <div class="text-center mt-6">
+                <button id="check-availability-btn" class="bg-amber-500 text-white font-bold py-3 px-8 rounded-lg">Check Availability</button>
+            </div>
+            <div id="availability-result" class="mt-4 text-center"></div>
+        </div>
+    </section>
+
+    <section id="step2" class="mt-12 hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center mb-6 max-w-3xl mx-auto">
+                <div class="step-active w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">2</div>
+                <h2 class="ml-4 text-xl font-semibold text-slate-800">Choose Your Wedding Package</h2>
+            </div>
+            <div id="package-selection-list" class="grid lg:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
+    <section id="step3" class="mt-12 hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center mb-6">
+                <div class="step-active w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">3</div>
+                <h2 class="ml-4 text-xl font-semibold text-slate-800">Select Your Vendors (Optional)</h2>
+            </div>
+            <div id="vendor-selection-list" class="bg-white p-8 rounded-xl shadow-lg border space-y-4">
+            </div>
+            <div class="text-center mt-6">
+                <button id="proceed-to-final-step-btn" class="bg-slate-800 text-white font-bold py-3 px-8 rounded-lg">Proceed to Confirmation</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="step4" class="mt-12 hidden">
+        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg border">
+            <div class="flex items-center mb-6">
+                <div class="step-active w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">4</div>
+                <h2 class="ml-4 text-xl font-semibold text-slate-800">Confirm Your Booking</h2>
+            </div>
+            <div id="booking-summary" class="mb-6 p-6 bg-slate-50 rounded-lg border space-y-3"></div>
+            <form id="customer-form" class="space-y-4">
+                <input type="text" id="customer-name" class="w-full bg-slate-100 border-slate-300 rounded-lg" readonly>
+                <input type="email" id="customer-email" class="w-full bg-slate-100 border-slate-300 rounded-lg" readonly>
+                <input type="tel" id="customer-phone" placeholder="Phone Number (Required)" class="w-full border-slate-300 rounded-lg" required>
+                <button type="submit" id="confirm-booking-btn" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg">Confirm Booking</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="booking-success" class="hidden mt-12 text-center">
+        <div class="max-w-3xl mx-auto bg-white p-12 rounded-xl shadow-lg border">
+            <div class="mx-auto bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+                <i class="fas fa-check-double text-4xl text-green-600"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-slate-800">Booking Confirmed!</h2>
+            <a href="index.html" class="mt-8 inline-block bg-amber-500 text-white font-bold py-3 px-8 rounded-lg">Return to Home</a>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let state = { bookingDate: '', ballroomId: '', ballroomName: '', selectedPackage: null, selectedAddons: [], selectedVendors: [], totalPrice: 0 };
+        const step1 = document.getElementById('step1'), step2 = document.getElementById('step2'), step3 = document.getElementById('step3'), step4 = document.getElementById('step4'), bookingSuccess = document.getElementById('booking-success');
+        const vendorListContainer = document.getElementById('vendor-selection-list');
+        const proceedToFinalStepBtn = document.getElementById('proceed-to-final-step-btn');
+        const dateInput = document.getElementById('booking-date'), ballroomSelect = document.getElementById('ballroom-select'), checkBtn = document.getElementById('check-availability-btn');
+        const availabilityResult = document.getElementById('availability-result'), packageList = document.getElementById('package-selection-list'), bookingSummary = document.getElementById('booking-summary');
+        const customerForm = document.getElementById('customer-form'), customerNameInput = document.getElementById('customer-name'), customerEmailInput = document.getElementById('customer-email'), customerPhoneInput = document.getElementById('customer-phone');
+
+        const API = {
+            authStatus: '/api/auth/status',
+            // START OF CHANGE: Point to the simple, working endpoint
+            ballrooms: '/api/ballrooms',
+            // END OF CHANGE
+            packages: '/api/packages',
+            vendors: '/api/vendors',
+            availability: '/api/bookings/check-availability',
+            booking: '/api/bookings',
+            updatePhone: '/api/customers/update-phone'
+        };
+
+        const showStep = (stepToShow) => [step1, step2, step3, step4, bookingSuccess].forEach(s => s.classList.add('hidden')) || stepToShow.classList.remove('hidden');
+        const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        async function loadInitialData() {
+            dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
+            try {
+                const res = await fetch(API.ballrooms);
+                if (!res.ok) throw new Error('Could not load ballrooms');
+                const ballrooms = await res.json();
+                ballroomSelect.innerHTML = '<option value="">Select a ballroom</option>';
+                ballrooms.forEach(b => ballroomSelect.innerHTML += `<option value="${b.id}">${b.name}</option>`);
+            } catch (error) {
+                availabilityResult.innerHTML = `<p class="text-red-500 font-semibold">${error.message}</p>`;
+            }
+        }
+
+        // All other JavaScript functions (loadUserData, loadPackages, loadVendors, etc.) remain unchanged.
+        // They will work correctly with this new URL.
+
+        // --- Placeholder for other functions to avoid repeating large blocks of code ---
+        async function loadUserData() { /* ... function is unchanged ... */ }
+        checkBtn.addEventListener('click', async () => { /* ... function is unchanged ... */ });
+        async function loadPackages() { /* ... function is unchanged ... */ }
+        async function loadVendors() { /* ... function is unchanged ... */ }
+        proceedToFinalStepBtn.addEventListener('click', () => { /* ... function is unchanged ... */ });
+        function renderBookingSummary() { /* ... function is unchanged ... */ }
+        customerForm.addEventListener('submit', async (e) => { /* ... function is unchanged ... */ });
+
+
+        // --- Actual functions copied for completeness ---
+        async function loadUserData() {
+            try {
+                const res = await fetch(API.authStatus);
+                if (res.status === 401 || !res.ok) return window.location.href = 'login.html?redirect=booking.html';
+                const user = await res.json();
+                if (user.isAuthenticated) {
+                    customerNameInput.value = user.name;
+                    customerEmailInput.value = user.email;
+                    customerPhoneInput.value = user.phone || '';
+                } else {
+                    window.location.href = 'login.html?redirect=booking.html';
+                }
+            } catch (error) {
+                alert('Could not verify your session. Please log in again.');
+                window.location.href = 'login.html';
+            }
+        }
+
+        checkBtn.addEventListener('click', async () => {
+            const date = dateInput.value, ballroomId = ballroomSelect.value;
+            if (!date || !ballroomId) return availabilityResult.innerHTML = `<p class="text-red-500 font-semibold">Please select both a date and a ballroom.</p>`;
+            availabilityResult.innerHTML = `<p class="text-slate-500">Checking...</p>`;
+            try {
+                const res = await fetch(API.availability, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ballroomId, date }) });
+                const result = await res.json();
+                if (result.isAvailable) {
+                    availabilityResult.innerHTML = `<p class="text-green-600 font-semibold mt-2"><i class="fas fa-check-circle mr-2"></i>Great! This venue is available.</p>`;
+                    state.bookingDate = date;
+                    state.ballroomId = ballroomId;
+                    state.ballroomName = ballroomSelect.options[ballroomSelect.selectedIndex].text;
+                    setTimeout(() => { loadPackages(); showStep(step2); }, 1500);
+                } else {
+                    availabilityResult.innerHTML = `<p class="text-red-500 font-semibold"><i class="fas fa-times-circle mr-2"></i>Sorry, this venue is booked.</p>`;
+                }
+            } catch (error) {
+                availabilityResult.innerHTML = `<p class="text-red-500 font-semibold">An error occurred checking availability.</p>`;
+            }
+        });
+
+        async function loadPackages() {
+            try {
+                const res = await fetch(API.packages);
+                const packages = await res.json();
+                packageList.innerHTML = '';
+                packages.forEach(pkg => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-xl shadow-sm border p-6 flex flex-col';
+                    let servicesHtml = (pkg.services || '').split('\n').map(s => `<li class="flex items-start text-sm"><i class="fas fa-check-circle text-amber-500 mt-1 mr-2"></i><span>${s}</span></li>`).join('');
+                    let addonsHtml = '';
+                    if(pkg.optionalServices && pkg.optionalServices.length > 0){
+                        addonsHtml += `<div class="mt-4 pt-4 border-t"><h4 class="font-semibold text-sm mb-2">Optional Add-ons</h4><div class="space-y-2">`;
+                        pkg.optionalServices.forEach(addon => {
+                            addonsHtml += `<label class="flex items-center text-sm"><input type="checkbox" class="h-4 w-4 text-amber-600 addon-checkbox" data-price="${addon.price}" data-name="${addon.name}"><span class="ml-3">${addon.name}</span><span class="ml-auto font-medium">+ LKR ${addon.price.toLocaleString()}</span></label>`;
+                        });
+                        addonsHtml += `</div></div>`;
+                    }
+                    card.innerHTML = `<div class="flex-grow"><h3 class="text-xl font-bold">${pkg.name}</h3><p class="text-3xl font-light text-amber-600 my-3">LKR ${pkg.price.toLocaleString()}</p><p class="text-slate-500 text-sm mb-4">${pkg.description}</p><ul class="space-y-2 mb-4">${servicesHtml}</ul>${addonsHtml}</div><div class="mt-auto"><div class="mt-4 pt-4 border-t text-right"><span class="text-sm">Updated Total:</span><span class="updated-price-display ml-2 text-xl font-bold">LKR ${pkg.price.toLocaleString()}</span></div><button class="select-package-btn mt-6 w-full bg-slate-800 text-white font-bold py-2.5 rounded-lg">Select Package</button></div>`;
+                    const updatePriceDisplay = () => {
+                        let currentTotal = pkg.price;
+                        card.querySelectorAll('.addon-checkbox:checked').forEach(c => currentTotal += parseFloat(c.dataset.price));
+                        card.querySelector('.updated-price-display').textContent = `LKR ${currentTotal.toLocaleString()}`;
+                    };
+                    card.querySelectorAll('.addon-checkbox').forEach(c => c.addEventListener('change', updatePriceDisplay));
+                    card.querySelector('.select-package-btn').addEventListener('click', () => {
+                        state.selectedPackage = pkg;
+                        state.selectedAddons = [];
+                        card.querySelectorAll('.addon-checkbox:checked').forEach(c => state.selectedAddons.push({ name: c.dataset.name, price: parseFloat(c.dataset.price) }));
+                        loadVendors();
+                        showStep(step3);
+                    });
+                    packageList.appendChild(card);
+                });
+            } catch (error) {
+                packageList.innerHTML = `<p class="text-red-500 col-span-full">Could not load packages.</p>`;
+            }
+        }
+
+        async function loadVendors() {
+            const response = await fetch(API.vendors);
+            const categories = await response.json();
+            vendorListContainer.innerHTML = '';
+            categories.forEach(cat => {
+                if (cat.vendors && cat.vendors.length > 0) {
+                    const details = document.createElement('details');
+                    details.className = 'border rounded-lg p-4';
+                    details.innerHTML = `<summary class="font-semibold text-lg cursor-pointer">${cat.name}</summary><div class="mt-4 space-y-2"></div>`;
+                    const vendorContainer = details.querySelector('div');
+                    cat.vendors.forEach(vendor => {
+                        const label = document.createElement('label');
+                        label.className = 'flex items-center justify-between p-2 rounded hover:bg-slate-50';
+                        label.innerHTML = `<div><span class="font-medium">${vendor.name}</span><span class="text-sm text-slate-500 ml-2">${vendor.contactInfo || ''}</span></div><div class="flex items-center"><span class="font-semibold mr-4">LKR ${vendor.price.toLocaleString()}</span><input type="checkbox" class="h-5 w-5 vendor-checkbox" data-vendor='${JSON.stringify(vendor)}'></div>`;
+                        vendorContainer.appendChild(label);
+                    });
+                    vendorListContainer.appendChild(details);
+                }
+            });
+        }
+
+        proceedToFinalStepBtn.addEventListener('click', () => {
+            state.selectedVendors = [];
+            vendorListContainer.querySelectorAll('.vendor-checkbox:checked').forEach(checkbox => {
+                state.selectedVendors.push(JSON.parse(checkbox.dataset.vendor));
+            });
+            renderBookingSummary();
+            showStep(step4);
+        });
+
+        function renderBookingSummary() {
+            let addonPrice = state.selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+            let vendorPrice = state.selectedVendors.reduce((sum, vendor) => sum + vendor.price, 0);
+            state.totalPrice = state.selectedPackage.price + addonPrice + vendorPrice;
+            let summaryHtml = `<h4 class="text-lg font-semibold">Booking Summary</h4><div class="flex justify-between"><span>Date:</span><span class="font-medium">${formatDate(state.bookingDate)}</span></div><div class="flex justify-between"><span>Venue:</span><span class="font-medium">${state.ballroomName}</span></div><hr><div class="flex justify-between"><span>Package:</span><span class="font-medium">${state.selectedPackage.name}</span></div><div class="flex justify-between"><span>Base Price:</span><span class="font-medium">LKR ${state.selectedPackage.price.toLocaleString()}</span></div>`;
+            if(state.selectedAddons.length > 0){
+                summaryHtml += `<p class="text-slate-500 mt-2">Add-ons:</p><ul class="list-disc list-inside text-sm pl-2">`;
+                state.selectedAddons.forEach(addon => summaryHtml += `<li class="flex justify-between"><span>${addon.name}</span><span>+ LKR ${addon.price.toLocaleString()}</span></li>`);
+                summaryHtml += `</ul>`;
+            }
+            if(state.selectedVendors.length > 0) {
+                summaryHtml += `<p class="text-slate-500 mt-2">Selected Vendors:</p><ul class="list-disc list-inside text-sm pl-2">`;
+                state.selectedVendors.forEach(v => summaryHtml += `<li class="flex justify-between"><span>${v.name}</span><span>+ LKR ${v.price.toLocaleString()}</span></li>`);
+                summaryHtml += `</ul>`;
+            }
+            summaryHtml += `<hr class="my-2"><div class="flex justify-between items-center text-xl font-bold"><span>Total Price:</span><span>LKR ${state.totalPrice.toLocaleString()}</span></div>`;
+            bookingSummary.innerHTML = summaryHtml;
+        }
+
+        customerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = customerPhoneInput.value;
+            if (!phone) { alert('Please enter your phone number.'); return; }
+            try {
+                const phoneRes = await fetch(API.updatePhone, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
+                if (!phoneRes.ok) throw new Error('Could not update phone number.');
+                const bookingData = { bookingDate: state.bookingDate, ballroomId: state.ballroomId, weddingPackageId: state.selectedPackage.id, totalPrice: state.totalPrice, vendorIds: state.selectedVendors.map(v => v.id) };
+                const bookingRes = await fetch(API.booking, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bookingData) });
+                if(!bookingRes.ok) throw new Error('Booking failed. Please try again.');
+                showStep(bookingSuccess);
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // --- INITIALIZATION ---
+        loadInitialData();
+        loadUserData();
+    });
+</script>
+</body>
+</html>

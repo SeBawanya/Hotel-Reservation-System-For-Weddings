@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Manage Vendors</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }</style>
+</head>
+<body>
+<header class="bg-white sticky top-0 z-40 border-b">
+  <div class="container mx-auto px-8 py-3 flex justify-between items-center">
+    <a href="index.html"><img src="images/LinkedinArtboard 3.png" alt="Logo" class="h-14"></a>
+    <a href="/admin-dashboard.html" class="text-sm font-semibold text-slate-600 hover:text-amber-600">
+      <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+    </a>
+  </div>
+</header>
+
+<main class="container mx-auto px-8 py-12">
+  <div class="mb-10">
+    <h1 class="text-3xl font-bold text-slate-800">Manage Vendors</h1>
+    <p class="mt-1 text-slate-500">Add, edit, and manage vendor categories and individual suppliers.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border">
+      <h2 class="text-xl font-semibold text-slate-800 mb-4">Vendor Categories</h2>
+      <form id="add-category-form" class="flex gap-2">
+        <input type="text" id="category-name" placeholder="New category name..." class="w-full border-slate-300 rounded-lg shadow-sm" required>
+        <button type="submit" class="bg-amber-500 text-white font-bold px-4 rounded-lg">Add</button>
+      </form>
+      <div id="category-list" class="mt-4 space-y-2"></div>
+    </div>
+
+    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-slate-800">Vendors in "<span id="current-category-name">None</span>"</h2>
+        <button id="add-vendor-btn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hidden"><i class="fas fa-plus mr-2"></i>Add Vendor</button>
+      </div>
+      <div id="vendor-list">
+        <p class="text-slate-500 text-center py-8">Please select a category to view its vendors.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="vendor-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden p-4">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+    <h2 id="modal-title" class="text-xl font-semibold mb-4">Add New Vendor</h2>
+    <form id="vendor-form" class="space-y-4">
+      <input type="hidden" id="vendor-id">
+      <input type="hidden" id="vendor-category-id">
+      <div>
+        <label for="vendor-name" class="block text-sm font-medium">Vendor Name</label>
+        <input type="text" id="vendor-name" class="w-full border-slate-300 rounded-lg" required>
+      </div>
+      <div>
+        <label for="vendor-price" class="block text-sm font-medium">Price (LKR)</label>
+        <input type="number" id="vendor-price" step="0.01" class="w-full border-slate-300 rounded-lg" required>
+      </div>
+      <div>
+        <label for="vendor-contact" class="block text-sm font-medium">Contact Info</label>
+        <input type="text" id="vendor-contact" class="w-full border-slate-300 rounded-lg">
+      </div>
+      <div class="flex justify-end gap-4 pt-4">
+        <button type="button" id="cancel-vendor-btn" class="bg-gray-200 font-bold py-2 px-4 rounded-lg">Cancel</button>
+        <button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const API_URL = '/api/vendors';
+    let categories = [];
+    let selectedCategoryId = null;
+
+    const categoryList = document.getElementById('category-list');
+    const addCategoryForm = document.getElementById('add-category-form');
+    const vendorList = document.getElementById('vendor-list');
+    const currentCategoryName = document.getElementById('current-category-name');
+    const addVendorBtn = document.getElementById('add-vendor-btn');
+    const vendorModal = document.getElementById('vendor-modal');
+    const vendorForm = document.getElementById('vendor-form');
+    const cancelVendorBtn = document.getElementById('cancel-vendor-btn');
+
+    const fetchCategories = async () => {
+      const response = await fetch(API_URL);
+      categories = await response.json();
+      renderCategories();
+    };
+
+    const renderCategories = () => {
+      categoryList.innerHTML = '';
+      categories.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-lg cursor-pointer flex justify-between items-center ${selectedCategoryId == cat.id ? 'bg-amber-100 text-amber-800 font-semibold' : 'hover:bg-slate-100'}`;
+        div.textContent = cat.name;
+        div.dataset.id = cat.id;
+        div.addEventListener('click', () => {
+          selectedCategoryId = cat.id;
+          currentCategoryName.textContent = cat.name;
+          addVendorBtn.classList.remove('hidden');
+          renderVendors(cat.vendors);
+          renderCategories(); // Re-render to update selection style
+        });
+        categoryList.appendChild(div);
+      });
+    };
+
+    const renderVendors = (vendors) => {
+      vendorList.innerHTML = '';
+      if (!vendors || vendors.length === 0) {
+        vendorList.innerHTML = '<p class="text-slate-500 text-center py-8">No vendors in this category yet.</p>';
+        return;
+      }
+      const table = document.createElement('table');
+      table.className = 'w-full text-left';
+      table.innerHTML = `
+                <thead class="border-b"><th class="p-2">Name</th><th class="p-2">Price</th><th class="p-2">Contact</th><th class="p-2"></th></thead>
+                <tbody></tbody>`;
+      const tbody = table.querySelector('tbody');
+      vendors.forEach(v => {
+        const row = document.createElement('tr');
+        row.className = 'border-b';
+        row.innerHTML = `
+                    <td class="p-2 font-medium">${v.name}</td>
+                    <td class="p-2">LKR ${v.price.toLocaleString()}</td>
+                    <td class="p-2">${v.contactInfo || ''}</td>
+                    <td class="p-2 text-right">
+                        <button class="edit-vendor-btn text-blue-600" data-vendor='${JSON.stringify(v)}'>Edit</button>
+                        <button class="delete-vendor-btn text-red-600 ml-4" data-id="${v.id}">Delete</button>
+                    </td>`;
+        tbody.appendChild(row);
+      });
+      vendorList.appendChild(table);
+    };
+
+    addCategoryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('category-name').value;
+      await fetch(`${API_URL}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      addCategoryForm.reset();
+      fetchCategories();
+    });
+
+    addVendorBtn.addEventListener('click', () => {
+      vendorForm.reset();
+      document.getElementById('modal-title').textContent = 'Add New Vendor';
+      document.getElementById('vendor-id').value = '';
+      document.getElementById('vendor-category-id').value = selectedCategoryId;
+      vendorModal.classList.remove('hidden');
+    });
+
+    cancelVendorBtn.addEventListener('click', () => vendorModal.classList.add('hidden'));
+
+    vendorForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('vendor-id').value;
+      const vendorData = {
+        name: document.getElementById('vendor-name').value,
+        price: parseFloat(document.getElementById('vendor-price').value),
+        contactInfo: document.getElementById('vendor-contact').value,
+        category: { id: document.getElementById('vendor-category-id').value }
+      };
+
+      const isEditing = !!id;
+      await fetch(isEditing ? `${API_URL}/${id}` : API_URL, {
+        method: isEditing ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vendorData)
+      });
+
+      vendorModal.classList.add('hidden');
+      fetchCategories();
+      setTimeout(() => { // Re-render vendors for the selected category after fetch
+        const updatedCategory = categories.find(c => c.id == selectedCategoryId);
+        if (updatedCategory) renderVendors(updatedCategory.vendors);
+      }, 500);
+    });
+
+    vendorList.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('edit-vendor-btn')) {
+        const vendor = JSON.parse(e.target.dataset.vendor);
+        document.getElementById('modal-title').textContent = 'Edit Vendor';
+        document.getElementById('vendor-id').value = vendor.id;
+        document.getElementById('vendor-name').value = vendor.name;
+        document.getElementById('vendor-price').value = vendor.price;
+        document.getElementById('vendor-contact').value = vendor.contactInfo || '';
+        document.getElementById('vendor-category-id').value = selectedCategoryId;
+        vendorModal.classList.remove('hidden');
+      }
+      if (e.target.classList.contains('delete-vendor-btn')) {
+        if (confirm('Are you sure you want to delete this vendor?')) {
+          await fetch(`${API_URL}/${e.target.dataset.id}`, { method: 'DELETE' });
+          fetchCategories();
+          setTimeout(() => {
+            const updatedCategory = categories.find(c => c.id == selectedCategoryId);
+            if (updatedCategory) renderVendors(updatedCategory.vendors);
+          }, 500);
+        }
+      }
+    });
+
+    fetchCategories();
+  });
+</script>
+</body>
+</html>
